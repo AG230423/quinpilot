@@ -1,32 +1,100 @@
-<script>
-  async function sendData() {
-    const scenario = document.getElementById("scenario").value;
-    
-    // Ping agent first to check if n8n is live
-    const healthCheck = await fetch("https://ag148.app.n8n.cloud/webhook-test/agentic-ai", {
-      method: "OPTIONS"
-    });
-
-    if (!healthCheck.ok) {
-      alert("⚠️ AI Agents not working right now. Please try again later.");
-      return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuinPilot – Agentic AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      font-size: 16px;
+      padding: 10px;
+      resize: vertical;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #0056b3;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #004494;
+    }
+    .chat-window {
+      margin-top: 30px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .user-msg {
+      color: #0056b3;
+      margin-bottom: 10px;
+    }
+    .ai-msg {
+      color: #111;
+      background: #eaeaea;
+      padding: 10px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>QuinPilot – Agentic AI POC</h2>
 
-    // Proceed if healthy
-    fetch("https://ag148.app.n8n.cloud/webhook-test/agentic-ai", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ scenario })
-    })
-    .then(response => response.text())
-    .then(data => {
-      alert("✅ AI Agent Response:\n" + data);
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("Something went wrong while talking to the AI.");
-    });
-  }
-</script>
+    <label for="scenario">Describe your real-world scenario:</label>
+    <textarea id="scenario" placeholder="E.g., We had a contract dispute over late delivery..."></textarea>
+    <button onclick="sendMessage()">Submit</button>
+
+    <div class="chat-window" id="chat">
+      <div class="ai-msg"><strong>Agent Status:</strong> ⚠️ AI agents not working yet. Please try again soon.</div>
+    </div>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const scenario = document.getElementById("scenario").value;
+      const chat = document.getElementById("chat");
+
+      if (!scenario.trim()) return;
+
+      // Display user message
+      chat.innerHTML += `<div class="user-msg"><strong>You:</strong> ${scenario}</div>`;
+
+      // Simulate pending agent message (will be replaced when N8N is live)
+      chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong> ⚠️ AI agents not connected. This is just a placeholder response.</div>`;
+
+      document.getElementById("scenario").value = '';
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
