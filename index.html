@@ -70,44 +70,47 @@
   <div class="container">
     <h2>QuinPilot – Agentic AI POC</h2>
 
-    <label for="scenario">Describe your real-world scenario:</label>
+    <label for="scenario">Describe your real-world legal or financial scenario:</label>
     <textarea id="scenario" placeholder="E.g., We had a contract dispute over late delivery..."></textarea>
     <button onclick="sendMessage()">Submit</button>
 
     <div class="chat-window" id="chat">
-      <div class="ai-msg"><strong>Agent Status:</strong> ⚠️ AI agents not working yet. Please try again soon.</div>
+      <!-- Dynamic conversation log appears here -->
     </div>
   </div>
 
   <script>
-    function sendMessage() {
+    async function sendMessage() {
       const scenario = document.getElementById("scenario").value;
       const chat = document.getElementById("chat");
 
       if (!scenario.trim()) return;
 
-      // Display user message
+      // Display user's message
       chat.innerHTML += `<div class="user-msg"><strong>You:</strong> ${scenario}</div>`;
 
-      // Send the input to n8n webhook
-fetch(https://ag148.app.n8n.cloud/webhook-test/agentic-ai, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ scenario })
-})
-.then(response => response.json())
-.then(data => {
-  const reply = data.ai_response || "⚠️ AI agents not responding yet.";
-  chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong><br>${reply}</div>`;
-})
-.catch(error => {
-  console.error("Fetch error:", error);
-  chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong> ❌ Error contacting AI agent.</div>`;
-});
-
+      // Clear input field
       document.getElementById("scenario").value = '';
+
+      // Call n8n webhook
+      try {
+        const response = await fetch("https://ag148.app.n8n.cloud/webhook-test/agentic-ai", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ scenario })
+        });
+
+        const data = await response.json();
+        const reply = data.ai_response || "⚠️ AI agents responded, but with no message.";
+
+        chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong><br>${reply}</div>`;
+      } catch (error) {
+        console.error("Fetch error:", error);
+        chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong> ❌ Error connecting to AI system.</div>`;
+      }
+
       chat.scrollTop = chat.scrollHeight;
     }
   </script>
