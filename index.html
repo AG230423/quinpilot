@@ -89,8 +89,23 @@
       // Display user message
       chat.innerHTML += `<div class="user-msg"><strong>You:</strong> ${scenario}</div>`;
 
-      // Simulate pending agent message (will be replaced when N8N is live)
-      chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong> ⚠️ AI agents not connected. This is just a placeholder response.</div>`;
+      // Send the input to n8n webhook
+fetch(https://ag148.app.n8n.cloud/webhook-test/agentic-ai, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ scenario })
+})
+.then(response => response.json())
+.then(data => {
+  const reply = data.ai_response || "⚠️ AI agents not responding yet.";
+  chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong><br>${reply}</div>`;
+})
+.catch(error => {
+  console.error("Fetch error:", error);
+  chat.innerHTML += `<div class="ai-msg"><strong>AI Agent:</strong> ❌ Error contacting AI agent.</div>`;
+});
 
       document.getElementById("scenario").value = '';
       chat.scrollTop = chat.scrollHeight;
